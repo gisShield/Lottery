@@ -31,6 +31,9 @@ namespace Lottery
         private int len;
 
         private int Speed;
+        private int SpeedDev;   //变缓倍速
+
+        private Pen p;
 
         //滚动方向：从上至下
         private bool bTop2Bottom;
@@ -51,11 +54,11 @@ namespace Lottery
 
         private void FormPrize_Load(object sender, EventArgs e)
         {
+            p = new Pen(Color.FromArgb(128, Color.Red), 3);
             this.lblWait.Text = titleSoftName;
             bTop2Bottom = true;
-            Speed = 5;
-            this.timer1.Interval = Speed;//中间值
-            //this.timer2.Interval = 10;
+            Speed = 2; SpeedDev = 2;
+            this.timer1.Interval = Speed;
             this.cmbPrize.SelectedIndex = 1;
             selected = -1;
             InitData();
@@ -349,7 +352,6 @@ namespace Lottery
         //重写label控件的paint方法
         private void l_label_Paint(object sender, PaintEventArgs e)
         {
-            
             Graphics g = e.Graphics;
             string s = lblResult.Text;
             Font f = lblResult.Font;//设置的字体
@@ -358,7 +360,7 @@ namespace Lottery
             float dy = (lblResult.Height - g.MeasureString(s, f).Height) / 2.0f;
             //计算水平偏移
             float dx = (lblResult.Width - g.MeasureString(s, f).Width) / 2.0f;
-
+            // dx = 5;
             //将文字显示的工作区偏移dx,dy，实现文字居中、水平居中、垂直居中
             rect.Offset(dx, dy);
             StringFormat format = StringFormat.GenericTypographic;
@@ -366,21 +368,19 @@ namespace Lottery
             using (GraphicsPath path = GetStringPath(s, dpi, rect, f, format))
             {
                 //阴影代码
-                //RectangleF off = rect;
-                //off.Offset(5, 5);//阴影偏移
-                //using (GraphicsPath offPath = GetStringPath(s, dpi, off, font, format))
-                //{
-                //    Brush b = new SolidBrush(Color.FromArgb(100, 0, 0, 0));
-                //    g.FillPath(b, offPath);
-                //    b.Dispose();
-                //}
-
-                g.SmoothingMode = SmoothingMode.AntiAlias;//设置字体质量
-                g.DrawPath(Pens.Red, path);//绘制轮廓（描边）
-
-                g.FillPath(Brushes.Red, path);//填充轮廓（填充）
+                /* RectangleF off = rect;
+                  off.Offset(5, 5);//阴影偏移
+                 using (GraphicsPath offPath = GetStringPath(s, dpi, off, f, format))
+                  {
+                      Brush b = new SolidBrush(Color.FromArgb(100, 0, 0, 0));
+                      g.FillPath(b, offPath);
+                      b.Dispose();
+                  }*/
+                g.SmoothingMode = SmoothingMode.AntiAlias;//设置字体质量               
+                g.DrawPath(p, path);//绘制轮廓（描边）
+                g.FillPath(Brushes.White, path);//填充轮廓（填充）
             }
-            
+
         }
 
     }

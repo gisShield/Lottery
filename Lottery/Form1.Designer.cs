@@ -122,7 +122,7 @@
             // lbl3
             // 
             this.lbl3.BackColor = System.Drawing.Color.White;
-            this.lbl3.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lbl3.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Bold);
             this.lbl3.ForeColor = System.Drawing.Color.Red;
             this.lbl3.Location = new System.Drawing.Point(327, 401);
             this.lbl3.Name = "lbl3";
@@ -134,7 +134,7 @@
             // lbl4
             // 
             this.lbl4.BackColor = System.Drawing.Color.White;
-            this.lbl4.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lbl4.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Bold);
             this.lbl4.Location = new System.Drawing.Point(327, 365);
             this.lbl4.Name = "lbl4";
             this.lbl4.Size = new System.Drawing.Size(235, 20);
@@ -229,7 +229,7 @@
             // 
             this.lblResult.BackColor = System.Drawing.Color.Transparent;
             this.lblResult.Font = new System.Drawing.Font("黑体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblResult.ForeColor = System.Drawing.Color.Red;
+            this.lblResult.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(164)))), ((int)(((byte)(174)))), ((int)(((byte)(181)))));
             this.lblResult.Location = new System.Drawing.Point(87, 73);
             this.lblResult.Name = "lblResult";
             this.lblResult.Size = new System.Drawing.Size(750, 50);
@@ -237,12 +237,13 @@
             this.lblResult.Text = "恭喜 守卫pureworld的石狮子 获得一等奖！";
             this.lblResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblResult.Visible = false;
+            this.lblResult.Paint += new System.Windows.Forms.PaintEventHandler(this.l_label_Paint);
             // 
             // lblWait
             // 
             this.lblWait.BackColor = System.Drawing.Color.Transparent;
             this.lblWait.Font = new System.Drawing.Font("宋体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblWait.ForeColor = System.Drawing.Color.Black;
+            this.lblWait.ForeColor = System.Drawing.Color.Red;
             this.lblWait.Location = new System.Drawing.Point(67, 23);
             this.lblWait.Name = "lblWait";
             this.lblWait.Size = new System.Drawing.Size(750, 50);
