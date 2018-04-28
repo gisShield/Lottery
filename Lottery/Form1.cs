@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-
+using System.Drawing.Drawing2D;
 ///抽奖小程序
 ///魏韶颖
 ///2016年1月4日
@@ -17,6 +17,7 @@ namespace Lottery
     {
 
         private string[] persons;
+        private List<string> list;
 
         //用一个变量也可以，但是这样更简单
         private int p1;
@@ -24,8 +25,12 @@ namespace Lottery
         private int p3;
         private int p4;
         private int p5;
+        // 中奖者下标
+        private int selected;
 
         private int len;
+
+        private int Speed;
 
         //滚动方向：从上至下
         private bool bTop2Bottom;
@@ -33,7 +38,7 @@ namespace Lottery
         //检查重名使用
         private Dictionary<string, int> dictName = null;
 
-        private string titleSoftName = "公司年会抽奖程序";
+        private string titleSoftName = "女流见面会抽奖程序";
         private string titleWait = "正在抽奖，请倒计时";
         private string fileName = "人员名单.txt";
 
@@ -48,8 +53,11 @@ namespace Lottery
         {
             this.lblWait.Text = titleSoftName;
             bTop2Bottom = true;
-            this.timer1.Interval = 110;//中间值
+            Speed = 5;
+            this.timer1.Interval = Speed;//中间值
+            //this.timer2.Interval = 10;
             this.cmbPrize.SelectedIndex = 1;
+            selected = -1;
             InitData();
         }
 
@@ -76,7 +84,7 @@ namespace Lottery
             dictName = new Dictionary<string, int>();
             persons = null;
 
-            List<string> list = new List<string>();
+            list = new List<string>();
             try
             {
                 //TODO:这里可以做成浏览文件方式，不要写死
@@ -221,6 +229,11 @@ namespace Lottery
             {
                 MessageBox.Show("没有找到人员名单.txt，如果没有则新建该文件，并输入员工姓名即可！");
             }
+            this.timer2.Stop();
+
+            // 剔除掉已中奖用户
+            person_out();
+            this.timer1.Interval = 5;
             this.timer1.Start();
             this.btnStart.Enabled = false;
             this.btnStop.Enabled = true;
@@ -229,16 +242,26 @@ namespace Lottery
             this.lblWait.Text = titleWait;
             this.lblWait.Show();
         }
+        private void person_out()
+        {
+            if (selected >= 0)
+            {
+                //Console.WriteLine(string.Format("persons的长度 :{0}", persons.Length));
+                //Console.WriteLine(string.Format("中奖下标为 :{0}", selected));
+                //Console.WriteLine(string.Format("List中元素 :{0}", list[selected]));
+                list.RemoveAt(selected);
+                persons = list.ToArray();
+                len = persons.Length;
+                // Console.WriteLine(string.Format("persons的长度 :{0}", len));
+                // Console.WriteLine();
+                selected = -1;
+            }
+        }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            this.timer1.Stop();
-            this.btnStart.Enabled = true;
-            this.btnStop.Enabled = false;
-            string result = string.Format("恭喜 {0} 获得{1}！", persons[p3], this.cmbPrize.SelectedItem.ToString());
-            this.lblResult.Text = result;
-            this.lblResult.Show();
-            this.lblWait.Hide();
+            Timer2Init();
+
         }
 
         private void btnReverse_Click(object sender, EventArgs e)
@@ -251,11 +274,34 @@ namespace Lottery
             LoadFromFile();
             MessageBox.Show("初始化奖池完成，共" + len + "人");
         }
-
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        private void Timer2Init()
         {
-            //频率：10ms - 210ms
-            this.timer1.Interval = 210 - this.trackBar1.Value * 20;
+            this.timer2.Start();
+            this.timer2.Interval = 100;
+        }
+        private void Timer2_RunFun(object sender, EventArgs e)
+        {
+            //   this.timer1.Stop();
+
+            if (this.timer1.Interval == 200)
+            {
+                //this.timer2.Stop();
+                this.timer1.Stop();
+                this.btnStart.Enabled = true;
+                this.btnStop.Enabled = false;
+                string result = string.Format("恭喜 {0} 获得{1}！", persons[p3], this.cmbPrize.SelectedItem.ToString());
+                this.lblResult.Text = result;
+                this.lblResult.Show();
+                this.lblWait.Hide();
+                //this.timer2.Stop();
+
+               
+            }
+            else
+            {
+                //       this.timer1.Start(); 
+                this.timer1.Interval = this.timer1.Interval + 5;
+            }
         }
 
         private void btnCheckRepeat_Click(object sender, EventArgs e)
@@ -263,7 +309,7 @@ namespace Lottery
             if (null != dictName && dictName.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.Append("以下姓名存在重复，请修改(建议增加部门名称)\n");
+                sb.Append("以下姓名存在重复，请修改(建议标记用来区分)\n");
                 foreach (KeyValuePair<string, int> item in dictName)
                 {
                     sb.Append(item.Key + " " + item.Value + "个");
@@ -279,19 +325,63 @@ namespace Lottery
 
         private void toolStripMenuItemAuthor_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("微信号：weishaoying\n编写日期：2016年1月4日");
+            MessageBox.Show("原作者：weishaoying\n编写日期：2016年1月4日\n修改人：四月天，MVP\n界面设计：幻凌\n修改日期：2018年4月28日");
         }
 
         private void toolStripMenuItemDoc_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("将员工姓名录入人员名单.txt中即可，每个名字占一行\n如果有相同姓名建议名字后面增加部门");
+            MessageBox.Show("将姓名录入人员名单.txt中即可，每个名字占一行\n如果有相同姓名建议名字后面标记用来区分");
         }
 
         private void toolStripMenuItemSoftUpdate_Click(object sender, EventArgs e)
         {
             MessageBox.Show("已是最新版本");
         }
+        GraphicsPath GetStringPath(string s, float dpi, RectangleF rect, Font font, StringFormat format)
+        {
+            GraphicsPath path = new GraphicsPath();
+            // Convert font size into appropriate coordinates
+            float emSize = dpi * font.SizeInPoints / 72;
+            path.AddString(s, font.FontFamily, (int)font.Style, emSize, rect, format);
 
+            return path;
+        }
+        //重写label控件的paint方法
+        private void l_label_Paint(object sender, PaintEventArgs e)
+        {
+            
+            Graphics g = e.Graphics;
+            string s = lblResult.Text;
+            Font f = lblResult.Font;//设置的字体
+            RectangleF rect = lblResult.ClientRectangle;//获取控件的工作区
+            //计算垂直偏移量
+            float dy = (lblResult.Height - g.MeasureString(s, f).Height) / 2.0f;
+            //计算水平偏移
+            float dx = (lblResult.Width - g.MeasureString(s, f).Width) / 2.0f;
+
+            //将文字显示的工作区偏移dx,dy，实现文字居中、水平居中、垂直居中
+            rect.Offset(dx, dy);
+            StringFormat format = StringFormat.GenericTypographic;
+            float dpi = g.DpiY;
+            using (GraphicsPath path = GetStringPath(s, dpi, rect, f, format))
+            {
+                //阴影代码
+                //RectangleF off = rect;
+                //off.Offset(5, 5);//阴影偏移
+                //using (GraphicsPath offPath = GetStringPath(s, dpi, off, font, format))
+                //{
+                //    Brush b = new SolidBrush(Color.FromArgb(100, 0, 0, 0));
+                //    g.FillPath(b, offPath);
+                //    b.Dispose();
+                //}
+
+                g.SmoothingMode = SmoothingMode.AntiAlias;//设置字体质量
+                g.DrawPath(Pens.Red, path);//绘制轮廓（描边）
+
+                g.FillPath(Brushes.Red, path);//填充轮廓（填充）
+            }
+            
+        }
 
     }
 }
